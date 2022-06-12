@@ -18,6 +18,6 @@ pub enum QueryMsg {
 #[serde(rename_all = "snake_case")]
 pub enum ExecuteMsg {
     Transfer { recipient: Addr },
-    Execute {},
+    Finalize {},
     Burn {},
 }

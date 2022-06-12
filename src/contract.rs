@@ -48,7 +48,7 @@ pub fn execute(
 ) -> Result<Response, ContractError> {
     match msg {
         ExecuteMsg::Transfer { recipient } => transfer(deps, env, info, recipient),
-        ExecuteMsg::Execute {} => exercise(deps, env, info),
+        ExecuteMsg::Finalize {} => finalize(deps, env, info),
         ExecuteMsg::Burn {} => burn(deps, env, info),
     }
 }
@@ -71,7 +71,7 @@ pub fn transfer(
         .add_attribute("owner", recipient))
 }
 
-pub fn exercise(
+pub fn finalize(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
@@ -227,7 +227,7 @@ mod tests {
         transfer(deps.as_mut(), mock_env(), info, Addr::unchecked("someone")).unwrap();
 
         let info = mock_info("creator", &counter_offer);
-        let err = exercise(deps.as_mut(), mock_env(), info).unwrap_err();
+        let err = finalize(deps.as_mut(), mock_env(), info).unwrap_err();
         match err {
             ContractError::Unauthorized {} => {}
             e => panic!("unexpected error: {}", e),
@@ -236,21 +236,21 @@ mod tests {
         let info = mock_info("someone", &counter_offer);
         let mut env = mock_env();
         env.block.height = 200_000;
-        let err = exercise(deps.as_mut(), env, info).unwrap_err();
+        let err = finalize(deps.as_mut(), env, info).unwrap_err();
         match err {
             ContractError::CustomError { val } => assert!(val.contains("Option expired.")),
             e => panic!("unexpected error: {}", e),
         }
 
         let info = mock_info("someone", &coins(39, "ETH"));
-        let err = exercise(deps.as_mut(), mock_env(), info).unwrap_err();
+        let err = finalize(deps.as_mut(), mock_env(), info).unwrap_err();
         match err {
             ContractError::CustomError { val } => assert!(val.contains("Counter offer mismatch.")),
             e => panic!("unexpected error: {}", e),
         }
 
         let info = mock_info("someone", &counter_offer);
-        let res = exercise(deps.as_mut(), mock_env(), info).unwrap();
+        let res = finalize(deps.as_mut(), mock_env(), info).unwrap();
         assert_eq!(res.messages.len(), 2);
         assert_eq!(
             res.messages[0].msg,
