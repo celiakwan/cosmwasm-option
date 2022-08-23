@@ -4,6 +4,7 @@ A smart contract written in Rust and built with CosmWasm for options trading.
 ### Version
 - [Rust](https://www.rust-lang.org/): 1.61.0
 - [CosmWasm](https://cosmwasm.com/): 1.0.0
+- [wasmd](https://github.com/CosmWasm/wasmd): 0.23.0
 
 ### Installation
 Install Rust.
@@ -57,7 +58,7 @@ JSON=$(jq -n --arg addr $(wasmd keys show -a wallet2) '{"denom":"upebble","addre
 RES=$(wasmd tx wasm store artifacts/cosmwasm_option.wasm --from wallet1 $TXFLAG -y --output json -b block)
 ```
 
-5. Get the code ID for the uploaded binary.
+5. Get the code ID of the uploaded binary.
 ```
 CODE_ID=$(echo $RES | jq -r '.logs[0].events[-1].attributes[0].value')
 ```
