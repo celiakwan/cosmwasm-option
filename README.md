@@ -84,7 +84,7 @@ wasmd query bank balances $CONTRACT $NODE
 
 9. Query the contract state by the state address.
 ```
-wasmd query wasm contract-state smart $CONTRACT '{"config":{}}' $NODE
+wasmd query wasm contract-state smart $CONTRACT '"config"' $NODE
 ```
 
 10. Transfer the option from wallet1 to wallet2. `recipient` is wallet2 address.
@@ -97,14 +97,14 @@ wasmd tx wasm execute $CONTRACT "$TRANSFER" \
 
 11. Finalize the trade.
 ```
-FINALIZE='{"finalize":{}}'
+FINALIZE='"finalize"'
 wasmd tx wasm execute $CONTRACT "$FINALIZE" \
     --amount 10upebble --from wallet2 $TXFLAG -y
 ```
 
 12. Query the contract state. This should fail since the state should has been removed.
 ```
-wasmd query wasm contract-state smart $CONTRACT '{"config":{}}' $NODE
+wasmd query wasm contract-state smart $CONTRACT '"config"' $NODE
 ```
 
 13. Create another instance of the contract.
@@ -122,19 +122,19 @@ CONTRACT=$(wasmd query wasm list-contract-by-code $CODE_ID $NODE --output json |
 
 15. Query the contract state by the state address.
 ```
-wasmd query wasm contract-state smart $CONTRACT '{"config":{}}' $NODE
+wasmd query wasm contract-state smart $CONTRACT '"config"' $NODE
 ```
 
 16. Burn the option.
 ```
-BURN='{"burn":{}}'
+BURN='"burn"'
 wasmd tx wasm execute $CONTRACT "$BURN" \
     --from wallet1 $TXFLAG -y
 ```
 
 17. Query the contract state. This should fail since the state should has been removed.
 ```
-wasmd query wasm contract-state smart $CONTRACT '{"config":{}}' $NODE
+wasmd query wasm contract-state smart $CONTRACT '"config"' $NODE
 ```
 
 ### Testing
