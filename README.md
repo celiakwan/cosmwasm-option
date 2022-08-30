@@ -45,15 +45,17 @@ export TXFLAG=($NODE --chain-id $CHAIN_ID --gas-prices 0.025upebble --gas auto -
 ```
 wasmd keys add wallet1
 wasmd keys add wallet2
+WALLET1=$(wasmd keys show -a wallet1)
+WALLET2=$(wasmd keys show -a wallet2)
 ```
 
 3. Request tokens from faucet.
 ```
-JSON=$(jq -n --arg addr $(wasmd keys show -a wallet1) '{"denom":"upebble","address":$addr}') && curl -X POST --header "Content-Type: application/json" --data "$JSON" "$FAUCET"/credit
-JSON=$(jq -n --arg addr $(wasmd keys show -a wallet2) '{"denom":"upebble","address":$addr}') && curl -X POST --header "Content-Type: application/json" --data "$JSON" "$FAUCET"/credit
+JSON=$(jq -n --arg addr $WALLET1 '{"denom":"upebble","address":$addr}') && curl -X POST --header "Content-Type: application/json" --data "$JSON" "$FAUCET"/credit
+JSON=$(jq -n --arg addr $WALLET2 '{"denom":"upebble","address":$addr}') && curl -X POST --header "Content-Type: application/json" --data "$JSON" "$FAUCET"/credit
 ```
 
-4. Upload the binary to the blockchain.
+4. Upload the binary to the chain.
 ```
 RES=$(wasmd tx wasm store artifacts/cosmwasm_option.wasm --from wallet1 $TXFLAG -y --output json -b block)
 ```
@@ -87,10 +89,9 @@ wasmd query bank balances $CONTRACT $NODE
 wasmd query wasm contract-state smart $CONTRACT '"config"' $NODE
 ```
 
-10. Transfer the option from wallet1 to wallet2. `recipient` is wallet2 address.
+10. Transfer the option from wallet1 to wallet2.
 ```
-wasmd keys show -a wallet2
-TRANSFER='{"transfer":{"recipient":"wasm1l2sath4pdhrtqsn3j6lhf4jaht8c5qhsxa2r24"}}'
+TRANSFER='{"transfer":{"recipient":"'WALLET2'"}}'
 wasmd tx wasm execute $CONTRACT "$TRANSFER" \
     --from wallet1 $TXFLAG -y
 ```
